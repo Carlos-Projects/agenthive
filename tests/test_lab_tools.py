@@ -70,6 +70,24 @@ class TestLabToolsStatus:
             result = runner.invoke(cli, ["status", "--url", "http://test:8000"])
             assert result.exit_code == 0
 
+    def test_status_server_error(self, runner: CliRunner) -> None:
+        """Test status command with non-200 response (else branch)."""
+        from agenthive.lab.tools import cli
+
+        mock_response = MagicMock()
+        mock_response.status_code = 502
+
+        mock_client = AsyncMock()
+        mock_client.__aenter__.return_value = mock_client
+        mock_client.get.return_value = mock_response
+
+        with (
+            patch("httpx.AsyncClient", return_value=mock_client),
+            patch("agenthive.lab.tools.console"),
+        ):
+            result = runner.invoke(cli, ["status", "--url", "http://test:8000"])
+            assert result.exit_code == 0
+
 
 class TestLabToolsModule:
     """Test module-level structure."""

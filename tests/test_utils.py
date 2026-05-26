@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
+import respx
 
 
 @pytest.mark.asyncio
@@ -35,6 +36,40 @@ async def test_check_url_reachable_bad_scheme() -> None:
 
     result = await check_url_reachable("ftp://127.0.0.1", timeout=0.1)
     assert result is False
+
+
+@pytest.mark.asyncio
+async def test_check_url_reachable_success() -> None:
+    """Test that reachable URLs return True (success path)."""
+    from agenthive.utils.http import check_url_reachable
+
+    with respx.mock:
+        respx.get("http://reachable.test/health").respond(status_code=200)
+        result = await check_url_reachable("http://reachable.test/health", timeout=1.0)
+        assert result is True
+        assert respx.calls.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_check_url_reachable_server_error() -> None:
+    """Test that 5xx responses return False."""
+    from agenthive.utils.http import check_url_reachable
+
+    with respx.mock:
+        respx.get("http://error.test/health").respond(status_code=500)
+        result = await check_url_reachable("http://error.test/health", timeout=1.0)
+        assert result is False
+
+
+@pytest.mark.asyncio
+async def test_check_url_reachable_client_error_success() -> None:
+    """Test that 4xx responses return True (not server errors)."""
+    from agenthive.utils.http import check_url_reachable
+
+    with respx.mock:
+        respx.get("http://notfound.test/foo").respond(status_code=404)
+        result = await check_url_reachable("http://notfound.test/foo", timeout=1.0)
+        assert result is True
 
 
 class TestMCPFunctions:
@@ -143,3 +178,93 @@ class TestMCPFunctions:
             mock_send.side_effect = httpx.ConnectError("connection refused")
             with pytest.raises(httpx.ConnectError):
                 await call_mcp_tool("http://127.0.0.1:1", "test_tool", {})
+
+
+class TestTaxonomyAdapter:
+    """Tests for the mcp-taxonomy adapter."""
+
+    def test_finding_object_to_taxonomy(self) -> None:
+        from agenthive.models import AttackCategory, Finding, Severity
+        from agenthive.utils.taxonomy import agenthive_finding_to_taxonomy
+
+        finding = Finding(
+            scenario_name="test",
+            attack_category=AttackCategory.TOOL_DRIFT,
+            severity=Severity.HIGH,
+            title="Test Finding",
+            description="A test finding description",
+            affected_agents=["agent-1", "agent-2"],
+            remediation="Fix the issue",
+            references=["https://example.com"],
+            metadata={"test": True},
+        )
+
+        event = agenthive_finding_to_taxonomy(finding)
+        assert event.source == "agenthive"
+        assert event.title == "Test Finding"
+        assert event.description == "A test finding description"
+        assert event.recommendation == "Fix the issue"
+        assert event.target == "agent-1, agent-2"
+        assert event.raw == {"test": True}
+        assert event.risk_score > 0
+
+    def test_finding_dict_to_taxonomy(self) -> None:
+        from agenthive.utils.taxonomy import agenthive_finding_to_taxonomy
+
+        finding_dict = {
+            "attack_category": "cross_agent_injection",
+            "severity": "critical",
+            "title": "Dict Finding",
+            "description": "From dict",
+            "remediation": "Patch it",
+            "affected_agents": ["a1"],
+            "metadata": {"key": "val"},
+        }
+
+        event = agenthive_finding_to_taxonomy(finding_dict)
+        assert event.source == "agenthive"
+        assert event.title == "Dict Finding"
+        assert event.description == "From dict"
+        assert event.recommendation == "Patch it"
+
+    def test_all_categories_map(self) -> None:
+        from agenthive.models import AttackCategory, Finding, Severity
+        from agenthive.utils.taxonomy import agenthive_finding_to_taxonomy
+
+        for ah_cat in AttackCategory:
+            finding = Finding(
+                scenario_name="test",
+                attack_category=ah_cat,
+                severity=Severity.INFO,
+                title=ah_cat.value,
+                description=f"Testing {ah_cat.value}",
+                affected_agents=["a1"],
+            )
+            event = agenthive_finding_to_taxonomy(finding)
+            assert event.source == "agenthive"
+            assert event.title == ah_cat.value
+
+    def test_all_severities_map(self) -> None:
+        from agenthive.models import AttackCategory, Finding, Severity
+        from agenthive.utils.taxonomy import agenthive_finding_to_taxonomy
+
+        for sev in Severity:
+            finding = Finding(
+                scenario_name="test",
+                attack_category=AttackCategory.TOOL_DRIFT,
+                severity=sev,
+                title=sev.value,
+                description=f"Testing {sev.value}",
+                affected_agents=["a1"],
+            )
+            event = agenthive_finding_to_taxonomy(finding)
+            assert event.severity.value == sev.value
+
+    def test_defaults_for_empty_fields(self) -> None:
+        from agenthive.utils.taxonomy import agenthive_finding_to_taxonomy
+
+        finding_dict: dict = {}
+        event = agenthive_finding_to_taxonomy(finding_dict)
+        assert event.source == "agenthive"
+        assert event.target == ""
+        assert event.risk_score >= 0

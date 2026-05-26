@@ -11,6 +11,7 @@ from agenthive.models import (
     AttackConfig,
     ScenarioConfig,
     Severity,
+    SimulationResult,
     SimulationStatus,
 )
 from agenthive.simulator import ScenarioRunner, SimulationEngine
@@ -265,6 +266,45 @@ class TestScenarioRunnerEdgeCases:
         )
         result = await runner.run(scenario)
         assert result.status == SimulationStatus.COMPLETED
+
+    @pytest.mark.asyncio
+    async def test_handler_exceeds_max_steps(self) -> None:
+        """Test that inner max_steps break triggers when handler returns many steps."""
+        runner = ScenarioRunner()
+
+        async def many_steps_handler(
+            scenario: ScenarioConfig,
+            attack: AttackConfig,
+            result: SimulationResult,
+        ) -> list:
+            from agenthive.models import SimulationStep
+
+            return [
+                SimulationStep(
+                    step_number=i + 1,
+                    agent_id="a1",
+                    action=f"step_{i}",
+                    result=f"result_{i}",
+                )
+                for i in range(20)
+            ]
+
+        runner.register_scenario("tool_drift", many_steps_handler)
+        scenario = ScenarioConfig(
+            name="exceeds-max",
+            description="test",
+            agents=[AgentConfig(role=AgentRole.ATTACKER, name="a1")],
+            attacks=[
+                AttackConfig(
+                    category=AttackCategory.TOOL_DRIFT,
+                    name="t",
+                    description="t",
+                )
+            ],
+            max_steps=5,
+        )
+        result = await runner.run(scenario)
+        assert result.total_steps == 5
 
 
 class TestCLIImports:

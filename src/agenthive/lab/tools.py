@@ -22,9 +22,21 @@ def setup(
         async with httpx.AsyncClient() as client:
             # Register agents
             agents = [
-                {"agent_id": "attacker-1", "name": "Red Agent", "capabilities": ["attack"]},
-                {"agent_id": "victim-1", "name": "Blue Agent 1", "capabilities": ["process"]},
-                {"agent_id": "victim-2", "name": "Blue Agent 2", "capabilities": ["process"]},
+                {
+                    "agent_id": "attacker-1",
+                    "name": "Red Agent",
+                    "capabilities": ["attack"],
+                },
+                {
+                    "agent_id": "victim-1",
+                    "name": "Blue Agent 1",
+                    "capabilities": ["process"],
+                },
+                {
+                    "agent_id": "victim-2",
+                    "name": "Blue Agent 2",
+                    "capabilities": ["process"],
+                },
             ]
 
             for agent in agents:
@@ -33,9 +45,18 @@ def setup(
 
             # Register tools
             tools = [
-                {"tool_name": "file_write", "definition": {"type": "io", "description": "Write to file"}},
-                {"tool_name": "execute_command", "definition": {"type": "exec", "description": "Execute command"}},
-                {"tool_name": "send_email", "definition": {"type": "comm", "description": "Send email"}},
+                {
+                    "tool_name": "file_write",
+                    "definition": {"type": "io", "description": "Write to file"},
+                },
+                {
+                    "tool_name": "execute_command",
+                    "definition": {"type": "exec", "description": "Execute command"},
+                },
+                {
+                    "tool_name": "send_email",
+                    "definition": {"type": "comm", "description": "Send email"},
+                },
             ]
 
             for tool in tools:
@@ -64,7 +85,3 @@ def status(
                 console.print("[red]Server not reachable[/red]")
 
     asyncio.run(_status())
-
-
-if __name__ == "__main__":
-    cli()

@@ -28,6 +28,7 @@ class TestAttackerAgent:
         assert agent.can_perform("injection")
         assert agent.can_perform("poisoning")
         assert not agent.can_perform("unknown")
+        assert agent.get_capabilities() == ["injection", "poisoning"]
 
     def test_wrong_role_raises(self) -> None:
         config = AgentConfig(role=AgentRole.VICTIM, name="test")
@@ -40,6 +41,7 @@ class TestVictimAgent:
         config = AgentConfig(role=AgentRole.VICTIM, name="test-victim")
         agent = VictimAgent(config)
         assert agent.name == "test-victim"
+        assert agent.id == config.id
         assert not agent.compromised
 
     def test_mark_compromised(self) -> None:
@@ -68,6 +70,7 @@ class TestObserverAgent:
         config = AgentConfig(role=AgentRole.OBSERVER, name="test-observer")
         agent = ObserverAgent(config)
         assert agent.name == "test-observer"
+        assert agent.id == config.id
         assert len(agent.get_observations()) == 0
 
     def test_record_observation(self) -> None:
@@ -87,6 +90,7 @@ class TestCoordinatorAgent:
         config = AgentConfig(role=AgentRole.COORDINATOR, name="test-coordinator")
         agent = CoordinatorAgent(config)
         assert agent.name == "test-coordinator"
+        assert agent.id == config.id
         assert len(agent.get_managed_agents()) == 0
 
     def test_add_managed_agent(self) -> None:

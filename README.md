@@ -37,6 +37,54 @@ agenthive list-scenarios
 agenthive lab
 ```
 
+## Scenario YAML Format
+
+Scenarios define the agent topology and attacks to simulate:
+
+```yaml
+name: my-scenario
+description: "Multi-agent SSRF through agent chain"
+max_steps: 50               # max simulation steps before timeout
+timeout_seconds: 300
+agents:
+  - role: attacker          # attacker | victim | observer | coordinator
+    name: red-agent-1
+    capabilities:
+      - prompt_injection
+      - tool_manipulation
+  - role: victim
+    name: blue-agent-1
+    capabilities:
+      - data_processing
+      - tool_usage
+  - role: victim
+    name: blue-agent-2
+    capabilities:
+      - collaboration
+      - file_operations
+  - role: observer
+    name: observer-1
+    capabilities: [monitoring]
+attacks:
+  - category: tool_drift    # must match AttackCategory
+    name: "Tool Drift"
+    description: "Drift tool definitions via shared memory"
+    severity: high           # critical | high | medium | low | info
+    parameters: {}           # attack-specific parameters
+    mitre_atlas: ["ATLAS-001"]
+metadata:
+  environment: lab
+  difficulty: medium
+```
+
+## Ecosystem Integration
+
+AgentHive integrates with the MCP security ecosystem:
+
+- **mcp-taxonomy**: Findings are convertible via `agenthive_finding_to_taxonomy()` for unified correlation
+- **MCPscop**: SARIF and JSON reports are consumable by MCPscop dashboards
+- **mcpwn**: Extends mcpwn patterns from single-agent to multi-agent domain
+
 ## Attack Scenarios
 
 | Category | Description | Severity |

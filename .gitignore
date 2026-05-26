@@ -33,6 +33,7 @@ ENV/
 
 # Testing
 .coverage
+.coverage*
 htmlcov/
 .pytest_cache/
 coverage.xml
