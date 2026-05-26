@@ -30,7 +30,7 @@ _AGENTHIVE_CATEGORY_MAP: dict[AttackCategory, TxAttackCategory] = {
     AttackCategory.AUTHORITY_HIJACK: TxAttackCategory.IMPERSONATION,
     AttackCategory.CROSS_AGENT_INJECTION: TxAttackCategory.INJECTION,
     AttackCategory.MULTI_AGENT_SSRF: TxAttackCategory.SSRF,
-    AttackCategory.SWARM_POISONING: TxAttackCategory.DATA_POISONING,
+    AttackCategory.SWARM_POISONING: TxAttackCategory.EXFILTRATION,
     AttackCategory.IDENTITY_SPOOFING: TxAttackCategory.IMPERSONATION,
 }
 
