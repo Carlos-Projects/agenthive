@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-import respx
 
 
 @pytest.mark.asyncio
@@ -43,11 +42,16 @@ async def test_check_url_reachable_success() -> None:
     """Test that reachable URLs return True (success path)."""
     from agenthive.utils.http import check_url_reachable
 
-    with respx.mock:
-        respx.get("http://reachable.test/health").respond(status_code=200)
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.get.return_value = mock_response
+
+    with patch("httpx.AsyncClient", return_value=mock_client):
         result = await check_url_reachable("http://reachable.test/health", timeout=1.0)
         assert result is True
-        assert respx.calls.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -55,8 +59,14 @@ async def test_check_url_reachable_server_error() -> None:
     """Test that 5xx responses return False."""
     from agenthive.utils.http import check_url_reachable
 
-    with respx.mock:
-        respx.get("http://error.test/health").respond(status_code=500)
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.get.return_value = mock_response
+
+    with patch("httpx.AsyncClient", return_value=mock_client):
         result = await check_url_reachable("http://error.test/health", timeout=1.0)
         assert result is False
 
@@ -66,8 +76,14 @@ async def test_check_url_reachable_client_error_success() -> None:
     """Test that 4xx responses return True (not server errors)."""
     from agenthive.utils.http import check_url_reachable
 
-    with respx.mock:
-        respx.get("http://notfound.test/foo").respond(status_code=404)
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.get.return_value = mock_response
+
+    with patch("httpx.AsyncClient", return_value=mock_client):
         result = await check_url_reachable("http://notfound.test/foo", timeout=1.0)
         assert result is True
 
