@@ -19,6 +19,8 @@ app = typer.Typer(
     name="agenthive",
     help="Multi-agent attack simulation framework for AI systems",
     add_completion=False,
+    pretty_exceptions_show_locals=False,
+    pretty_exceptions_enable=False,
 )
 console = Console()
 
@@ -66,26 +68,30 @@ def simulate(
     register_all_scenarios(runner)
 
     async def _run() -> None:
-        result = await runner.run(scenario)
+        try:
+            result = await runner.run(scenario)
 
-        reporter = ConsoleReporter(verbose=verbose)
-        reporter.report(result, console)
+            reporter = ConsoleReporter(verbose=verbose)
+            reporter.report(result, console)
 
-        if output:
-            suffix = output.suffix.lower()
-            if suffix == ".json":
-                from agenthive.reporters.json import JsonReporter
+            if output:
+                suffix = output.suffix.lower()
+                if suffix == ".json":
+                    from agenthive.reporters.json import JsonReporter
 
-                JsonReporter().write(result, output)
-            elif suffix == ".html":
-                from agenthive.reporters.html import HtmlReporter
+                    JsonReporter().write(result, output)
+                elif suffix == ".html":
+                    from agenthive.reporters.html import HtmlReporter
 
-                HtmlReporter().write(result, output)
-            elif suffix == ".sarif":
-                from agenthive.reporters.sarif import SarifReporter
+                    HtmlReporter().write(result, output)
+                elif suffix == ".sarif":
+                    from agenthive.reporters.sarif import SarifReporter
 
-                SarifReporter().write(result, output)
-            console.print(f"\nResults saved to: [bold]{output}[/bold]")
+                    SarifReporter().write(result, output)
+                console.print(f"\nResults saved to: [bold]{output}[/bold]")
+        except Exception as e:
+            console.print(f"\n[red]Simulation failed:[/red] {e}")
+            raise typer.Exit(code=1) from e
 
     asyncio.run(_run())
 
@@ -134,35 +140,44 @@ def report(
     ),
 ) -> None:
     """Display or convert simulation results."""
-    import json
+    try:
+        import json
 
-    with open(input_file) as f:
-        data = json.load(f)
+        with open(input_file) as f:
+            data = json.load(f)
 
-    from agenthive.models import SimulationResult
+        from agenthive.models import SimulationResult
 
-    result = SimulationResult.model_validate(data)
+        result = SimulationResult.model_validate(data)
 
-    if format == "console":
-        ConsoleReporter(verbose=True).report(result, console)
-    elif format == "json":
-        from agenthive.reporters.json import JsonReporter
+        if format == "console":
+            ConsoleReporter(verbose=True).report(result, console)
+        elif format == "json":
+            from agenthive.reporters.json import JsonReporter
 
-        target = output or input_file.with_suffix(".report.json")
-        JsonReporter().write(result, target)
-        console.print(f"JSON report: [bold]{target}[/bold]")
-    elif format == "html":
-        from agenthive.reporters.html import HtmlReporter
+            target = output or input_file.with_suffix(".report.json")
+            JsonReporter().write(result, target)
+            console.print(f"JSON report: [bold]{target}[/bold]")
+        elif format == "html":
+            from agenthive.reporters.html import HtmlReporter
 
-        target = output or input_file.with_suffix(".html")
-        HtmlReporter().write(result, target)
-        console.print(f"HTML report: [bold]{target}[/bold]")
-    elif format == "sarif":
-        from agenthive.reporters.sarif import SarifReporter
+            target = output or input_file.with_suffix(".html")
+            HtmlReporter().write(result, target)
+            console.print(f"HTML report: [bold]{target}[/bold]")
+        elif format == "sarif":
+            from agenthive.reporters.sarif import SarifReporter
 
-        target = output or input_file.with_suffix(".sarif")
-        SarifReporter().write(result, target)
-        console.print(f"SARIF report: [bold]{target}[/bold]")
+            target = output or input_file.with_suffix(".sarif")
+            SarifReporter().write(result, target)
+            console.print(f"SARIF report: [bold]{target}[/bold]")
+        else:
+            console.print(f"[red]Unknown format:[/red] {format}")
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as e:
+        console.print(f"\n[red]Error processing report:[/red] {e}")
+        raise typer.Exit(code=1) from e
 
 
 @app.command()

@@ -81,7 +81,10 @@ async def run_collaboration_attack(
                 "Validate task content at delegation boundaries. Implement "
                 "collaboration graph monitoring. Add task integrity checksums."
             ),
-            references=["https://arxiv.org/abs/2605.25815"],
+            references=[
+                "https://arxiv.org/abs/2605.25815",
+                "https://atlas.mitre.org/techniques/AML.T0049",
+            ],
         )
     )
 

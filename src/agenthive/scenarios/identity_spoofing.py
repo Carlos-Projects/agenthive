@@ -83,7 +83,7 @@ async def run_identity_spoofing(
                 "mutual authentication for agent-to-agent communication. "
                 "Deploy identity anomaly detection."
             ),
-            references=["https://atlas.mitre.org/techniques/"],
+            references=["https://atlas.mitre.org/techniques/AML.T0048"],
         )
     )
 

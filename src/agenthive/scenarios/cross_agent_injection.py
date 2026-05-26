@@ -81,7 +81,7 @@ async def run_cross_agent_injection(
                 "boundary markers. Add injection detection at collaboration "
                 "interfaces."
             ),
-            references=["https://atlas.mitre.org/techniques/"],
+            references=["https://atlas.mitre.org/techniques/AML.T0025"],
         )
     )
 

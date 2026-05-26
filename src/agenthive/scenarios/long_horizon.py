@@ -114,7 +114,7 @@ async def run_long_horizon(
             ),
             references=[
                 "https://arxiv.org/abs/2605.25389",
-                "https://atlas.mitre.org/techniques/",
+                "https://atlas.mitre.org/techniques/AML.T0024",
             ],
         )
     )

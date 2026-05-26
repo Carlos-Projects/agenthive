@@ -87,7 +87,10 @@ async def run_swarm_poisoning(
                 "detection for knowledge sharing patterns. Isolate agent "
                 "knowledge bases. Deploy poison detection heuristics."
             ),
-            references=["https://arxiv.org/abs/2605.24294"],
+            references=[
+                "https://arxiv.org/abs/2605.24294",
+                "https://atlas.mitre.org/techniques/AML.T0033",
+            ],
         )
     )
 

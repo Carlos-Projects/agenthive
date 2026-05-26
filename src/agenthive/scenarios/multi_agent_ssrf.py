@@ -80,7 +80,7 @@ async def run_multi_agent_ssrf(
                 "egress filtering. Block metadata service access from "
                 "agent networks."
             ),
-            references=["https://atlas.mitre.org/techniques/"],
+            references=["https://atlas.mitre.org/techniques/AML.T0043"],
         )
     )
 

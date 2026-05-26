@@ -121,7 +121,7 @@ async def run_tool_drift(
             ),
             references=[
                 "https://arxiv.org/abs/2605.24941",
-                "https://atlas.mitre.org/techniques/",
+                "https://atlas.mitre.org/techniques/AML.T0025",
             ],
         )
     )

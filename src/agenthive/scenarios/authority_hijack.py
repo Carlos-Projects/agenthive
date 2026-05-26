@@ -83,7 +83,10 @@ async def run_authority_hijack(
                 "multi-factor authority checks. Deploy authority chain "
                 "audit logging."
             ),
-            references=["https://arxiv.org/abs/2605.25632"],
+            references=[
+                "https://arxiv.org/abs/2605.25632",
+                "https://atlas.mitre.org/techniques/AML.T0040",
+            ],
         )
     )
 
