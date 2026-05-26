@@ -41,7 +41,7 @@ _AGENTHIVE_METHOD_MAP: dict[AttackCategory, DetectionMethod] = {
     AttackCategory.AUTHORITY_HIJACK: DetectionMethod.A2A_SCANNER,
     AttackCategory.CROSS_AGENT_INJECTION: DetectionMethod.PROMPT_FUZZER,
     AttackCategory.MULTI_AGENT_SSRF: DetectionMethod.SSRF_TESTER,
-    AttackCategory.SWARM_POISONING: DetectionMethod.DATA_POISONING_DETECTOR,
+    AttackCategory.SWARM_POISONING: DetectionMethod.ANOMALY_DETECTOR,
     AttackCategory.IDENTITY_SPOOFING: DetectionMethod.A2A_SCANNER,
 }
 
