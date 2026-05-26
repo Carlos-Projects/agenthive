@@ -40,7 +40,7 @@ def setup(
             ]
 
             for agent in agents:
-                await client.post(f"{url}/agents/register", params=agent)
+                await client.post(f"{url}/agents/register", json=agent)
                 console.print(f"Registered agent: {agent['name']}")
 
             # Register tools
@@ -60,7 +60,7 @@ def setup(
             ]
 
             for tool in tools:
-                await client.post(f"{url}/tools/register", params=tool)
+                await client.post(f"{url}/tools/register", json=tool)
                 console.print(f"Registered tool: {tool['tool_name']}")
 
             console.print("\nLab server setup complete!")

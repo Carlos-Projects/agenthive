@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from datetime import UTC, datetime
+from typing import Any
 
 from agenthive.models import (
     AgentConfig,
@@ -22,12 +23,12 @@ class SimulationEngine:
     """Core engine that orchestrates multi-agent attack simulations."""
 
     def __init__(self) -> None:
-        self._scenario_handlers: dict[str, Callable] = {}
+        self._scenario_handlers: dict[str, Callable[..., Any]] = {}
 
     def register_handler(
         self,
         category: str,
-        handler: Callable,
+        handler: Callable[..., Any],
     ) -> None:
         """Register a handler for a specific attack category."""
         self._scenario_handlers[category] = handler
@@ -95,7 +96,7 @@ class SimulationEngine:
         action: str,
         result: str,
         simulation: SimulationResult,
-        details: dict | None = None,
+        details: dict[str, Any] | None = None,
     ) -> SimulationStep:
         """Create and record a single simulation step.
 
@@ -151,7 +152,7 @@ class ScenarioRunner:
     def register_scenario(
         self,
         category: str,
-        handler: Callable,
+        handler: Callable[..., Any],
     ) -> None:
         """Register a scenario handler."""
         self.engine.register_handler(category, handler)

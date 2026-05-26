@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from agenthive.models import AttackCategory
 from agenthive.scenarios.authority_hijack import run_authority_hijack
 from agenthive.scenarios.collaboration_attack import run_collaboration_attack
@@ -13,7 +16,7 @@ from agenthive.scenarios.swarm_poisoning import run_swarm_poisoning
 from agenthive.scenarios.tool_drift import run_tool_drift
 from agenthive.simulator import ScenarioRunner
 
-SCENARIO_HANDLERS: dict[str, callable] = {
+SCENARIO_HANDLERS: dict[str, Callable[..., Any]] = {
     AttackCategory.TOOL_DRIFT.value: run_tool_drift,
     AttackCategory.LONG_HORIZON.value: run_long_horizon,
     AttackCategory.COLLABORATION_ATTACK.value: run_collaboration_attack,
@@ -31,7 +34,7 @@ def register_all_scenarios(runner: ScenarioRunner) -> None:
         runner.register_scenario(category, handler)
 
 
-def get_scenario_template(name: str) -> dict:
+def get_scenario_template(name: str) -> dict[str, Any]:
     """Generate a scenario template YAML structure."""
     return {
         "name": name,

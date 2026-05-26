@@ -6,6 +6,8 @@ with findings from other tools in the MCP security ecosystem.
 
 from __future__ import annotations
 
+from typing import Any
+
 from mcp_taxonomy.core import (
     AttackCategory as TxAttackCategory,
 )
@@ -45,7 +47,7 @@ _AGENTHIVE_METHOD_MAP: dict[AttackCategory, DetectionMethod] = {
 
 
 def agenthive_finding_to_taxonomy(
-    finding: Finding | dict,
+    finding: Finding | dict[str, Any],
 ) -> TaxonomyEvent:
     """Convert an AgentHive Finding to a mcp-taxonomy TaxonomyEvent.
 

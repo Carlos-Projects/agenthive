@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from agenthive.models import SimulationResult
 
@@ -35,12 +36,14 @@ class SarifReporter:
         with open(path, "w") as f:
             json.dump(sarif, f, indent=2)
 
-    def _build_rules(self, result: SimulationResult) -> list[dict]:
+    def _build_rules(self, result: SimulationResult) -> list[dict[str, Any]]:
         """Build SARIF rule definitions from findings."""
         rules = []
         seen = set()
         for finding in result.findings:
-            rule_id = f"AGENTHIVE-{finding.attack_category.value.upper().replace('_', '-')}"
+            rule_id = (
+                f"AGENTHIVE-{finding.attack_category.value.upper().replace('_', '-')}"
+            )
             if rule_id not in seen:
                 seen.add(rule_id)
                 severity_map = {
@@ -59,16 +62,20 @@ class SarifReporter:
                         "defaultConfiguration": {
                             "level": severity_map.get(finding.severity.value, "warning")
                         },
-                        "helpUri": finding.references[0] if finding.references else None,
+                        "helpUri": finding.references[0]
+                        if finding.references
+                        else None,
                     }
                 )
         return rules
 
-    def _build_results(self, result: SimulationResult) -> list[dict]:
+    def _build_results(self, result: SimulationResult) -> list[dict[str, Any]]:
         """Build SARIF result entries from findings."""
         results = []
         for finding in result.findings:
-            rule_id = f"AGENTHIVE-{finding.attack_category.value.upper().replace('_', '-')}"
+            rule_id = (
+                f"AGENTHIVE-{finding.attack_category.value.upper().replace('_', '-')}"
+            )
             severity_map = {
                 "critical": "error",
                 "high": "error",

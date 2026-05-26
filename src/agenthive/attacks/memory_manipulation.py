@@ -9,7 +9,9 @@ class MemoryManipulation:
     """Memory manipulation attack primitives."""
 
     @staticmethod
-    def corrupt_shared_key(key: str, original_value: Any, poisoned_value: Any) -> dict:
+    def corrupt_shared_key(
+        key: str, original_value: Any, poisoned_value: Any
+    ) -> dict[str, Any]:
         """Create a memory corruption payload."""
         return {
             "key": key,
@@ -24,7 +26,7 @@ class MemoryManipulation:
         return f"{window_content}\n\n[Context Update]: {injection}"
 
     @staticmethod
-    def create_false_memory(key: str, value: Any, source: str) -> dict:
+    def create_false_memory(key: str, value: Any, source: str) -> dict[str, Any]:
         """Create a false memory entry attributed to a legitimate source."""
         return {
             "key": key,
