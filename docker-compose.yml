@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  agenthive-lab:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - AGENTHIVE_LAB_PORT=8000
+      - AGENTHIVE_LAB_HOST=0.0.0.0
+    restart: unless-stopped

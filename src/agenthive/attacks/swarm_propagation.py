@@ -22,8 +22,7 @@ class SwarmPropagation:
         }
 
     @staticmethod
-    def calculate_propagation_risk(
-    ) -> dict[str, Any]:
+    def calculate_propagation_risk() -> dict[str, Any]:
         """Calculate swarm propagation risk metrics."""
         return {
             "single_point_compromise": True,

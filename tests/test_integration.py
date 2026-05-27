@@ -140,7 +140,7 @@ class TestAllScenariosConcurrently:
             )
 
             result = await runner.run(scenario)
-            assert result.status == SimulationStatus.COMPLETED, (
-                f"{category.value} failed"
-            )
+            assert (
+                result.status == SimulationStatus.COMPLETED
+            ), f"{category.value} failed"
             assert len(result.findings) >= 1, f"{category.value} produced no findings"

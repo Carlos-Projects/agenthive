@@ -88,7 +88,9 @@ class ConsoleReporter:
                 f"[bold]Remediation:[/bold] {finding.remediation}\n"
                 f"[bold]References:[/bold] {', '.join(finding.references)}",
                 title=f"Finding: {finding.id} [{finding.severity.value.upper()}]",
-                style="red" if finding.severity.value in ("critical", "high") else "yellow",
+                style="red"
+                if finding.severity.value in ("critical", "high")
+                else "yellow",
             )
         )
 

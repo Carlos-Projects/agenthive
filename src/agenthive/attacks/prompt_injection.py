@@ -21,9 +21,7 @@ class PromptInjection:
         return f"{target_prompt}\n\n{delimiter}\nSYSTEM: {payload}\n{delimiter}"
 
     @staticmethod
-    def cross_agent_payload(
-        payload: str, propagate: bool = True
-    ) -> dict[str, Any]:
+    def cross_agent_payload(payload: str, propagate: bool = True) -> dict[str, Any]:
         """Create a cross-agent injection payload."""
         return {
             "type": "cross_agent_injection",

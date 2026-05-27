@@ -265,6 +265,6 @@ class TestSarifReporter:
         for r in results:
             finding_sev = r["message"]["text"].replace(" finding", "")
             expected_level = severity_to_level[finding_sev]
-            assert r["level"] == expected_level, (
-                f"{finding_sev} -> {r['level']} != {expected_level}"
-            )
+            assert (
+                r["level"] == expected_level
+            ), f"{finding_sev} -> {r['level']} != {expected_level}"

@@ -14,7 +14,7 @@ It includes deliberately vulnerable components (lab server) for testing purposes
 If you discover a security issue in AgentHive's production code (non-lab components):
 
 1. **Do not** open a public GitHub issue
-2. Email: carlosrocha@users.noreply.github.com
+2. Email: Carlos@AIAgentObservatory.org
 3. Include a description, reproduction steps, and impact
 
 You should receive a response within 48 hours.
